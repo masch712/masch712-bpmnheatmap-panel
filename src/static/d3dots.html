@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <style>
+    body { margin:0;position:fixed;top:0;right:0;bottom:0;left:0; }
+    path {
+      fill: none;
+      stroke: lightgrey;
+    }
+  </style>
+</head>
+
+<body>
+  <svg width="500" height="500">
+    <g id="g-line"></g>
+
+	</svg>
+  <script>
+    
+    var svg = d3.select("svg");
+    
+    var gap = 25;
+    var duration = 100
+  
+    var line = d3.line()
+      .x(function(d) { return d.x; })
+      .y(function(d) { return d.y; })
+    	.curve(d3.curveCatmullRom.alpha(0.5));
+
+    var points = [{x: 0, y: 300}, {x: 25, y: 180}, {x: 50, y: 150}, {x: 100, y: 145}, {x: 200, y: 130}, {x: 300, y: 120}, {x: 500, y: 25}];
+
+    d3.select("#g-line")
+      .append("path")
+      .attr("d", line(points))
+      .attr("id", "myPath");
+    
+    var totalLength = myPath.getTotalLength();
+    
+    var numberOfDots = Math.floor(totalLength / gap);
+    
+    var data = d3.range(numberOfDots).map(function(d, i) {
+      	let length = myPath.getTotalLength() * (i/numberOfDots);
+      	let point = myPath.getPointAtLength(length);
+      	//return point.x; 
+      	return {x: point.x, y: point.y}; 
+    });
+    
+    
+    var dots = d3.select("#g-line").selectAll(".dot")
+    	.data(data)
+    	.enter()
+      .append("circle")
+    	.attr("cx", function(d, i){ return d.x; })
+    	.attr("cy", function(d, i){ return d.y; })
+    	.attr("r", 5);
+
+    var count = 0;
+    
+     var tid = setInterval(updateDots, duration);
+      function updateDots() {
+        dots.transition()
+        	.duration(300)
+          .style("fill", function(d,i){
+          
+          var colour = "white"
+          
+          //if at the end or near the end of the path, start from the beginning
+          if (count == numberOfDots ) {
+            if ( i == numberOfDots || i == 0 || i == 1 ) {
+              colour = "blue";
+          	} else {
+            	colour = "white";
+          	};
+          } else if (count == (numberOfDots - 1) ) {
+            if ( i == numberOfDots || i == (numberOfDots - 1) || i == 0 ) {
+              colour = "blue";
+          	} else {
+            	colour = "white";
+          	};
+          //else shade the 3 dots from the count onwards
+          } else {
+            if (i == count || i == (count + 1) || i == (count + 2) ) {
+              colour = "blue";
+            } else {
+              colour = "white";
+            };
+          };   
+          
+          return colour
+          
+        });
+        
+        count = count == numberOfDots ? 0 : count + 1;
+      };
+      
+
+   
+
+  </script>
+</body>
