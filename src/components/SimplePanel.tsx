@@ -2,8 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import { PanelProps } from '@grafana/data';
 import { SimpleOptions } from 'types';
 import { css, cx } from '@emotion/css';
-import { useStyles2, useTheme2 } from '@grafana/ui';
-import Viewer from "bpmn-js";
+import { useStyles2 } from '@grafana/ui';
+import sketchyRendererModule from 'bpmn-js-sketchy';
+import Viewer from 'bpmn-js';
 
 interface Props extends PanelProps<SimpleOptions> {}
 
@@ -28,18 +29,19 @@ const getStyles = () => {
 };
 
 export const SimplePanel: React.FC<Props> = ({ options, data, width, height }) => {
-  const theme = useTheme2();
+  // const theme = useTheme2();
   const styles = useStyles2(getStyles);
   const bpmnContainer = useRef(null);
 
   useEffect(() => {
     (async () => {
       //TODO: this path is probably trash
-      const sampleBpmnResponse = await fetch("/public/plugins/masch712-bpmnheatmap-panel/static/sample.bpmn")
+      const sampleBpmnResponse = await fetch('/public/plugins/masch712-bpmnheatmap-panel/static/sample.bpmn');
       const sampleBpmnXml = await sampleBpmnResponse.text();
-      const viewer = new Viewer({ container: bpmnContainer.current });
+      const viewer = new Viewer({ container: bpmnContainer.current, additionalModules: [sketchyRendererModule] });
       await viewer.importXML(sampleBpmnXml, 'BPMNDiagram_1');
-      viewer.get("canvas").zoom("fit-viewport");
+      // TODO: Try this somewhere? https://stackoverflow.com/a/44354673/5775568
+      viewer.get('canvas').zoom('fit-viewport');
       console.log('loaded');
     })();
   }, []);

@@ -49,7 +49,7 @@
           <dc:Bounds height="21.0" width="74.0" x="333.0" y="226.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_1" sourceElement="_BPMNShape_Task_2" targetElement="_BPMNShape_ExclusiveGateway_2">
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_1" sourceElement="_BPMNShape_Task_2" targetElement="_BPMNShape_ExclusiveGateway_2" bioc:stroke="#6b3c00" color:border-color="#6b3c00">
         <di:waypoint xsi:type="dc:Point" x="196.0" y="236.0"/>
         <di:waypoint xsi:type="dc:Point" x="276.0" y="235.0"/>
         <bpmndi:BPMNLabel>
