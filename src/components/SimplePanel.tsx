@@ -3,7 +3,7 @@ import { PanelProps } from '@grafana/data';
 import { SimpleOptions } from 'types';
 import { css, cx } from '@emotion/css';
 import { useStyles2 } from '@grafana/ui';
-import sketchyRendererModule from 'bpmn-js-sketchy';
+import rendererModule from '../bpmn-modules/renderer';
 import Viewer from 'bpmn-js';
 
 interface Props extends PanelProps<SimpleOptions> {}
@@ -38,7 +38,7 @@ export const SimplePanel: React.FC<Props> = ({ options, data, width, height }) =
       //TODO: this path is probably trash
       const sampleBpmnResponse = await fetch('/public/plugins/masch712-bpmnheatmap-panel/static/sample.bpmn');
       const sampleBpmnXml = await sampleBpmnResponse.text();
-      const viewer = new Viewer({ container: bpmnContainer.current, additionalModules: [sketchyRendererModule] });
+      const viewer = new Viewer({ container: bpmnContainer.current, additionalModules: [rendererModule] });
       await viewer.importXML(sampleBpmnXml, 'BPMNDiagram_1');
       // TODO: Try this somewhere? https://stackoverflow.com/a/44354673/5775568
       viewer.get('canvas').zoom('fit-viewport');
