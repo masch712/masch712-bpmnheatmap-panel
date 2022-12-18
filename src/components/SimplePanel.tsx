@@ -3,8 +3,8 @@ import { PanelProps } from '@grafana/data';
 import { SimpleOptions } from 'types';
 import { css, cx } from '@emotion/css';
 import { useStyles2 } from '@grafana/ui';
-import rendererModule from '../bpmn-modules/renderer';
 import Viewer from 'bpmn-js';
+import { NyanRendererModule } from 'bpmn-modules/NyanRendererModule';
 
 interface Props extends PanelProps<SimpleOptions> {}
 
@@ -25,6 +25,12 @@ const getStyles = () => {
       left: 0;
       padding: 10px;
     `,
+    '@keyframes followpath': css`
+      to {
+        motion-offset: 100%;
+        offset-distance: 100%;
+      }
+    `
   };
 };
 
@@ -38,9 +44,17 @@ export const SimplePanel: React.FC<Props> = ({ options, data, width, height }) =
       //TODO: this path is probably trash
       const sampleBpmnResponse = await fetch('/public/plugins/masch712-bpmnheatmap-panel/static/sample.bpmn');
       const sampleBpmnXml = await sampleBpmnResponse.text();
-      const viewer = new Viewer({ container: bpmnContainer.current, additionalModules: [rendererModule] });
+      const viewer = new Viewer({ container: bpmnContainer.current, additionalModules: [ NyanRendererModule ] });
       await viewer.importXML(sampleBpmnXml, 'BPMNDiagram_1');
-      // TODO: Try this somewhere? https://stackoverflow.com/a/44354673/5775568
+      // Overlays seem sketchy.  They end up in a <div> sibling to the main bpmn <svg>.  Don't love it.
+      // const overlays = viewer.get('overlays');
+      // overlays.add('SequenceFlow_1', {
+      //   position: {
+      //     top: 0,
+      //     left: 0
+      //   },
+      //   html: `<svg><circle id="SequenceFlow_1_dot" cx="0%" cy="0%" r="15"></circle></svg>`
+      // });
       viewer.get('canvas').zoom('fit-viewport');
       console.log('loaded');
     })();
