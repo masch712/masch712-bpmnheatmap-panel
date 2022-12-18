@@ -4,7 +4,7 @@ import { SimpleOptions } from 'types';
 import { css, cx } from '@emotion/css';
 import { useStyles2 } from '@grafana/ui';
 import Viewer from 'bpmn-js';
-import { NyanRendererModule } from 'bpmn-modules/NyanRendererModule';
+import { DotRendererModule } from 'bpmn-modules/DotRendererModule';
 
 interface Props extends PanelProps<SimpleOptions> {}
 
@@ -44,7 +44,7 @@ export const SimplePanel: React.FC<Props> = ({ options, data, width, height }) =
       //TODO: this path is probably trash
       const sampleBpmnResponse = await fetch('/public/plugins/masch712-bpmnheatmap-panel/static/sample.bpmn');
       const sampleBpmnXml = await sampleBpmnResponse.text();
-      const viewer = new Viewer({ container: bpmnContainer.current, additionalModules: [ NyanRendererModule ] });
+      const viewer = new Viewer({ container: bpmnContainer.current, additionalModules: [ DotRendererModule ] });
       await viewer.importXML(sampleBpmnXml, 'BPMNDiagram_1');
       // Overlays seem sketchy.  They end up in a <div> sibling to the main bpmn <svg>.  Don't love it.
       // const overlays = viewer.get('overlays');
