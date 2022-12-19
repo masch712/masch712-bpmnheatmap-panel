@@ -1,0 +1,6 @@
+@keyframes followpath {
+  to {
+    motion-offset: 100%;
+    offset-distance: 100%;
+  }
+}
