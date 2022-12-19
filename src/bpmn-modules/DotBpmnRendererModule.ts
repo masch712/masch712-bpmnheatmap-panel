@@ -41,6 +41,16 @@ class DotBpmnRenderer extends BpmnRenderer {
     return catGfx;
   }
 
+  private createPathFromConnection(connection: any) {
+    const waypoints = connection.waypoints;
+
+    let pathData = 'm  ' + waypoints[0].x + ',' + waypoints[0].y;
+    for (let i = 1; i < waypoints.length; i++) {
+      pathData += 'L' + waypoints[i].x + ',' + waypoints[i].y + ' ';
+    }
+    return pathData;
+  }
+
   drawConnection(visuals: any, connection: any) {
     console.log('drawConnection');
     // EventBus.js makes it clear that it stops calling renderers when it encou ters a drawConnection function that returns something: https://github.com/bpmn-io/diagram-js/blob/v11.4.1/lib/core/EventBus.js#L373-L377
