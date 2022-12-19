@@ -17,6 +17,7 @@ class DotBpmnRenderer extends BpmnRenderer {
     rendererPriority?: number
   ) {
     super(config, eventBus, styles, pathMap, canvas, textRenderer, 1500);
+    //TODO: https://usefulangle.com/post/39/adding-css-to-stylesheet-with-javascript#:~:text=Adding%20a%20New%20CSS%20Rule,rule%20to%20the%20stylesheet%20sheet.
   }
 
   static $inject: string[] = ['config', 'eventBus', 'styles', 'pathMap', 'canvas', 'textRenderer'];
