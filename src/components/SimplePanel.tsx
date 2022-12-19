@@ -25,12 +25,6 @@ const getStyles = () => {
       left: 0;
       padding: 10px;
     `,
-    '@keyframes followpath': css`
-      to {
-        motion-offset: 100%;
-        offset-distance: 100%;
-      }
-    `
   };
 };
 
@@ -46,22 +40,13 @@ export const SimplePanel: React.FC<Props> = ({ options, data, width, height }) =
       const sampleBpmnXml = await sampleBpmnResponse.text();
       const viewer = new Viewer({ container: bpmnContainer.current, additionalModules: [ DotBpmnRendererModule ] });
       await viewer.importXML(sampleBpmnXml, 'BPMNDiagram_1');
-      // Overlays seem sketchy.  They end up in a <div> sibling to the main bpmn <svg>.  Don't love it.
-      // const overlays = viewer.get('overlays');
-      // overlays.add('SequenceFlow_1', {
-      //   position: {
-      //     top: 0,
-      //     left: 0
-      //   },
-      //   html: `<svg><circle id="SequenceFlow_1_dot" cx="0%" cy="0%" r="15"></circle></svg>`
-      // });
       viewer.get('canvas').zoom('fit-viewport');
       console.log('loaded');
     })();
   }, []);
 
   return (
-    <div
+    <div id='panel-wrapper'
       className={cx(
         styles.wrapper,
         css`

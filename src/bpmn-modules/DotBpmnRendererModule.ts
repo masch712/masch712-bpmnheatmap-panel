@@ -53,6 +53,19 @@ class DotBpmnRenderer extends BpmnRenderer {
 
   drawConnection(visuals: any, connection: any) {
     console.log('drawConnection');
+    const pathElement = super.drawConnection(visuals, connection);
+    const pathDefinition = pathElement.getAttribute('d');
+    const dotId = `${connection.id}_dot`;
+    //TOOD: use tiny-svg sugar here (like svgAttr, svgAppend, etc)
+    const dotElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');;
+    dotElement.setAttribute("id", dotId);
+    dotElement.setAttribute('cx', '0%');
+    dotElement.setAttribute('cy', '0%');
+    dotElement.setAttribute('r', '15');
+    dotElement.setAttribute('style', `fill: red; offset-path: path("${pathDefinition}"); animation: followpath 4s linear infinite;`);
+    pathElement.parentElement?.appendChild(dotElement);
+    return pathElement;
+
     // EventBus.js makes it clear that it stops calling renderers when it encou ters a drawConnection function that returns something: https://github.com/bpmn-io/diagram-js/blob/v11.4.1/lib/core/EventBus.js#L373-L377
     // from https://github.com/bpmn-io/bpmn-js/blob/v11.1.0/lib/draw/BpmnRenderer.js#L1360-L1398
     const pathData = this.createPathFromConnection(connection);
