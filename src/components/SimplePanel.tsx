@@ -4,7 +4,7 @@ import { SimpleOptions } from 'types';
 import { css, cx } from '@emotion/css';
 import { useStyles2 } from '@grafana/ui';
 import Viewer from 'bpmn-js';
-import { DotBpmnRendererModule } from 'bpmn-modules/DotBpmnRendererModule';
+import { DotBpmnRendererModule, DotFlowModule } from 'bpmn-modules/DotBpmnRendererModule';
 
 interface Props extends PanelProps<SimpleOptions> {}
 
@@ -36,14 +36,14 @@ export const SimplePanel: React.FC<Props> = ({ options, data, width, height }) =
   useEffect(() => {
     (async () => {
       //TODO: this path is probably trash
-      const sampleBpmnResponse = await fetch('/public/plugins/masch712-bpmnheatmap-panel/static/sample.bpmn');
+      const sampleBpmnResponse = await fetch('/public/plugins/masch712-bpmnheatmap-panel/static/simple.bpmn');
       const sampleBpmnXml = await sampleBpmnResponse.text();
-      const viewer = new Viewer({ container: bpmnContainer.current, additionalModules: [ DotBpmnRendererModule ] });
+      const viewer = new Viewer({ container: bpmnContainer.current, additionalModules: [ DotBpmnRendererModule, DotFlowModule, { data: ['value', data] } ] });
       await viewer.importXML(sampleBpmnXml, 'BPMNDiagram_1');
       viewer.get('canvas').zoom('fit-viewport');
       console.log('loaded');
     })();
-  }, []);
+  }, [data]);
 
   return (
     <div id='panel-wrapper'
