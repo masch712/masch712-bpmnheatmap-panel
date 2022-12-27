@@ -60,7 +60,7 @@ class DotFlowProvider {
     this.countByTransitionId = {};
     this.dataFrameView.forEach(entry => {
       this.maxCount = max([entry.Count, this.maxCount])!;
-      this.countByTransitionId[entry['currentTransitionId.keyword']] = entry.Count;
+      this.countByTransitionId[entry['currentTransitionId.keyword']] = entry.Count; //TODO: make this configurable
     });
   }
   getFlowForConnection(connectionId: string) {
