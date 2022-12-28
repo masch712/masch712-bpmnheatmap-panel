@@ -45,7 +45,6 @@ export const SimplePanel: React.FC<Props> = ({ options, data, width, height }) =
       bpmnViewer.current = new Viewer({ container: bpmnContainer.current, additionalModules: [DotBpmnRendererModule, DotFlowModule, { data: ['value', data] }] });
       await bpmnViewer.current.importXML(sampleBpmnXml, 'BPMNDiagram_1');
       bpmnViewer.current.get('canvas').zoom('fit-viewport');
-      console.log('loaded');
     })();
   }, [data]);
   // TODO: re-render on panel resize

@@ -31,14 +31,18 @@ class DotBpmnRenderer extends BpmnRenderer {
     const pathDefinition = pathElement.getAttribute('d');
     const dotId = `${connection.id}_dot`;
     const dotFlow = this.dotFlowProvider.getFlowForConnection(connection.id);
+    const animationLengthSecs = 5;
     //TOOD: use tiny-svg sugar here (like svgAttr, svgAppend, etc)
-    const dotElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');;
-    dotElement.setAttribute("id", dotId);
-    dotElement.setAttribute('cx', '0%');
-    dotElement.setAttribute('cy', '0%');
-    dotElement.setAttribute('r', dotFlow.dotRadius.toString());
-    dotElement.setAttribute('style', `fill: red; offset-path: path("${pathDefinition}"); animation: followpath 4s linear infinite;`);
-    pathElement.parentElement?.appendChild(dotElement);
+    for (let iDot = 0; iDot < dotFlow.numDots; iDot++) {
+      
+      const dotElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');;
+      dotElement.setAttribute("id", dotId);
+      dotElement.setAttribute('cx', '0%');
+      dotElement.setAttribute('cy', '0%');
+      dotElement.setAttribute('r', dotFlow.dotRadius.toString());
+      dotElement.setAttribute('style', `fill: red; offset-path: path("${pathDefinition}"); animation: followpath ${animationLengthSecs}s linear infinite; animation-delay: -${iDot*animationLengthSecs/dotFlow.numDots}s`);
+      pathElement.parentElement?.appendChild(dotElement);
+    }
     return pathElement;
   }
 }
@@ -66,7 +70,9 @@ class DotFlowProvider {
   getFlowForConnection(connectionId: string) {
     console.log();
     return {
-      dotRadius: (this.countByTransitionId[connectionId] / this.maxCount) * 10,
+      // dotRadius: (this.countByTransitionId[connectionId] / this.maxCount) * 10,
+      dotRadius: 3,
+      numDots: this.countByTransitionId[connectionId]
     };
   }
 }
