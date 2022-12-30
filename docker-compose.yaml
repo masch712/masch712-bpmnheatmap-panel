@@ -12,11 +12,13 @@ services:
     volumes:
       - ./dist:/var/lib/grafana/plugins/masch712-bpmnheatmap-panel
       - ./provisioning:/etc/grafana/provisioning
-  elasticsearch:
+      - grafana-storage:/var/lib/grafana grafana/grafana-enterprise
+  elasticsearch: # TODO: volume
     image: docker.elastic.co/elasticsearch/elasticsearch:8.5.3
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
+      # TODO: set number of index replicas to zero: https://stackoverflow.com/a/55111098/5775568
     ports:
       - 9200:9200
       - 9300:9300
@@ -30,3 +32,147 @@ services:
       - 5601:5601
 networks:
   elastic:
+volumes:
+  grafana-storage: # for saving datasources / dashboards
+
+
+  # panel json:
+# {
+#   "annotations": {
+#     "list": [
+#       {
+#         "builtIn": 1,
+#         "datasource": {
+#           "type": "grafana",
+#           "uid": "-- Grafana --"
+#         },
+#         "enable": true,
+#         "hide": true,
+#         "iconColor": "rgba(0, 211, 255, 1)",
+#         "name": "Annotations & Alerts",
+#         "target": {
+#           "limit": 100,
+#           "matchAny": false,
+#           "tags": [],
+#           "type": "dashboard"
+#         },
+#         "type": "dashboard"
+#       }
+#     ]
+#   },
+#   "editable": true,
+#   "fiscalYearStartMonth": 0,
+#   "graphTooltip": 0,
+#   "id": 1,
+#   "links": [],
+#   "liveNow": false,
+#   "panels": [
+#     {
+#       "datasource": {
+#         "type": "elasticsearch",
+#         "uid": "V9opkYt4k"
+#       },
+#       "gridPos": {
+#         "h": 9,
+#         "w": 12,
+#         "x": 0,
+#         "y": 0
+#       },
+#       "id": 2,
+#       "options": {
+#         "seriesCountSize": "sm",
+#         "showSeriesCount": false,
+#         "text": "Default value of text input option"
+#       },
+#       "targets": [
+#         {
+#           "alias": "",
+#           "bucketAggs": [
+#             {
+#               "field": "currentTransitionId.keyword",
+#               "id": "2",
+#               "settings": {
+#                 "min_doc_count": "1",
+#                 "order": "desc",
+#                 "orderBy": "_term",
+#                 "size": "10"
+#               },
+#               "type": "terms"
+#             }
+#           ],
+#           "datasource": {
+#             "type": "elasticsearch",
+#             "uid": "V9opkYt4k"
+#           },
+#           "metrics": [
+#             {
+#               "id": "1",
+#               "type": "count"
+#             }
+#           ],
+#           "query": "",
+#           "refId": "A",
+#           "timeField": "eventHandledAt"
+#         },
+#         {
+#           "alias": "",
+#           "bucketAggs": [
+#             {
+#               "field": "currentTransitionId.keyword",
+#               "id": "2",
+#               "settings": {
+#                 "min_doc_count": "1",
+#                 "order": "desc",
+#                 "orderBy": "_term",
+#                 "size": "10"
+#               },
+#               "type": "terms"
+#             }
+#           ],
+#           "datasource": {
+#             "type": "elasticsearch",
+#             "uid": "V9opkYt4k"
+#           },
+#           "hide": false,
+#           "metrics": [
+#             {
+#               "field": "processVariables._millisSinceLastTransition",
+#               "id": "1",
+#               "settings": {
+#                 "percents": [
+#                   "25",
+#                   "50",
+#                   "75",
+#                   "95",
+#                   "99"
+#                 ]
+#               },
+#               "type": "percentiles"
+#             }
+#           ],
+#           "query": "",
+#           "refId": "B",
+#           "timeField": "eventHandledAt"
+#         }
+#       ],
+#       "title": "Panel Title",
+#       "type": "masch712-bpmnheatmap-panel"
+#     }
+#   ],
+#   "schemaVersion": 37,
+#   "style": "dark",
+#   "tags": [],
+#   "templating": {
+#     "list": []
+#   },
+#   "time": {
+#     "from": "now-6h",
+#     "to": "now"
+#   },
+#   "timepicker": {},
+#   "timezone": "",
+#   "title": "New dashboard",
+#   "uid": "QInLkYtVk",
+#   "version": 1,
+#   "weekStart": ""
+# }

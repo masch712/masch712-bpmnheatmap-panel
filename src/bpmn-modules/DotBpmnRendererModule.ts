@@ -30,17 +30,18 @@ class DotBpmnRenderer extends BpmnRenderer {
     const pathElement = super.drawConnection(visuals, connection);
     const pathDefinition = pathElement.getAttribute('d');
     const dotId = `${connection.id}_dot`;
-    const dotFlow = this.dotFlowProvider.getFlowForConnection(connection.id);
-    const animationLengthSecs = 5;
+    const {dotFlowConfigs} = this.dotFlowProvider.getFlowForConnection(connection.id);
     //TOOD: use tiny-svg sugar here (like svgAttr, svgAppend, etc)
-    for (let iDot = 0; iDot < dotFlow.numDots; iDot++) {
-      
+    for (let iDot = 0; iDot < dotFlowConfigs.length; iDot++) {
+      const dotFlowConfig = dotFlowConfigs[iDot];
+        const animationLengthSecs = dotFlowConfig.animationDurationMillis / 1000;
       const dotElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');;
       dotElement.setAttribute("id", dotId);
       dotElement.setAttribute('cx', '0%');
       dotElement.setAttribute('cy', '0%');
-      dotElement.setAttribute('r', dotFlow.dotRadius.toString());
-      dotElement.setAttribute('style', `fill: red; offset-path: path("${pathDefinition}"); animation: followpath ${animationLengthSecs}s linear infinite; animation-delay: -${iDot*animationLengthSecs/dotFlow.numDots}s`);
+      dotElement.setAttribute('r', dotFlowConfig.radius.toString());
+      // TODO: is there a chance this animation-delay can overlap dots?
+      dotElement.setAttribute('style', `fill: red; offset-path: path("${pathDefinition}"); animation: followpath ${animationLengthSecs}s linear infinite; animation-delay: -${iDot*animationLengthSecs/dotFlowConfigs.length}s`);
       pathElement.parentElement?.appendChild(dotElement);
     }
     return pathElement;
@@ -52,28 +53,59 @@ export const DotBpmnRendererModule = {
   dotBpmnRenderer: ['type', DotBpmnRenderer],
 };
 
+type percentiles = 25 | 50 | 75 | 90; //TODO: can i must name bhtis a number type?
+type elasticsearchPercentileDataframeFieldName = `p${percentiles}.0 processVariables._millisSinceLastTransition`;
 class DotFlowProvider {
-  dataFrameView: DataFrameView<{'currentTransitionId.keyword': string, 'Count': number}>;
+  dataFrameViewOfTransitionCounts: DataFrameView<{'currentTransitionId.keyword': string, 'Count': number}>;
+  dataFrameViewOfTransitionDurations: DataFrameView<{[key in elasticsearchPercentileDataframeFieldName]: number} & { 'currentTransitionId.keyword': string}>;
   countByTransitionId: {[transitionId: string]: number};
+  millisPercentilesByTransitionId: {[transitionId: string]: {[key in percentiles]: number}} = {};
   maxCount: number;
   constructor(data: PanelData) {
     // map connection IDs to dot sizes
-    this.dataFrameView = new DataFrameView(data.series[0]);
+    this.dataFrameViewOfTransitionCounts = new DataFrameView(data.series[0]);
+    this.dataFrameViewOfTransitionDurations = new DataFrameView(data.series[1]);
     
     this.maxCount = 0;
     this.countByTransitionId = {};
-    this.dataFrameView.forEach(entry => {
+    this.dataFrameViewOfTransitionCounts.forEach(entry => {
       this.maxCount = max([entry.Count, this.maxCount])!;
       this.countByTransitionId[entry['currentTransitionId.keyword']] = entry.Count; //TODO: make this configurable
     });
+    this.dataFrameViewOfTransitionDurations.forEach(entry => {
+      this.millisPercentilesByTransitionId[entry['currentTransitionId.keyword']] = {
+        "25": entry['p25.0 processVariables._millisSinceLastTransition'],
+        "50": entry['p50.0 processVariables._millisSinceLastTransition'],
+        "75": entry['p75.0 processVariables._millisSinceLastTransition'],
+        "90": entry['p90.0 processVariables._millisSinceLastTransition'],
+      }
+    })
   }
   getFlowForConnection(connectionId: string) {
-    console.log();
+    //TODO: calculate size and speed for each dot
+    const numDots = this.countByTransitionId[connectionId];
+    const dotFlowConfigs: Array<{radius: number, animationDurationMillis: number}> = [];
+    for (let iDot = 0; iDot < numDots; iDot++) {
+      let animationDurationMillis = 0;
+      const animationDurationFactor = 10; //TODO: parameterize
+      //TODO: think about this:
+      if (iDot >= .9 * numDots) {
+        animationDurationMillis = this.millisPercentilesByTransitionId[connectionId][90];
+      } else if (iDot >= .75 * numDots) {
+        animationDurationMillis = this.millisPercentilesByTransitionId[connectionId][75];
+      } else if (iDot >= .5 * numDots) {
+        animationDurationMillis = this.millisPercentilesByTransitionId[connectionId][50];
+      } else {
+        animationDurationMillis = this.millisPercentilesByTransitionId[connectionId][25];
+      } 
+      dotFlowConfigs.push({
+        radius: 3, //TODO: normalize based on maxCount?
+        animationDurationMillis: animationDurationMillis * animationDurationFactor
+      });
+    }
     return {
-      // dotRadius: (this.countByTransitionId[connectionId] / this.maxCount) * 10,
-      dotRadius: 3,
-      numDots: this.countByTransitionId[connectionId]
-    };
+      dotFlowConfigs,
+    }
   }
 }
 
