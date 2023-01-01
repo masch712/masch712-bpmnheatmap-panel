@@ -5,4 +5,5 @@ export interface SimpleOptions {
   showSeriesCount: boolean;
   seriesCountSize: SeriesSize;
   animationDurationMultiple: number;
+  bpmnXmlContent: string;
 }

@@ -11,36 +11,20 @@ export const plugin = new PanelPlugin<SimpleOptions>(SimplePanel).setPanelOption
       defaultValue: 20,
     })
     .addTextInput({
-      path: 'text',
-      name: 'Simple text option',
-      description: 'Description of panel option',
-      defaultValue: 'Default value of text input option',
+      name: "BPMN XML",
+      path: "bpmnXmlContent",
     })
-    .addBooleanSwitch({
-      path: 'showSeriesCount',
-      name: 'Show series counter',
-      defaultValue: false,
+    .addNestedOptions({
+      category: ['Dot Colors'],
+      path: 'dotColorOpts',
+      build: (builder, context) => {
+        builder.addColorPicker({
+          path: 'dotColor',
+          name: 'Dot color',
+        }).addFieldNamePicker({
+          path: 'fieldName',
+          name: 'Field name',
+        })
+      }
     })
-    .addRadio({
-      path: 'seriesCountSize',
-      defaultValue: 'sm',
-      name: 'Series counter size',
-      settings: {
-        options: [
-          {
-            value: 'sm',
-            label: 'Small',
-          },
-          {
-            value: 'md',
-            label: 'Medium',
-          },
-          {
-            value: 'lg',
-            label: 'Large',
-          },
-        ],
-      },
-      showIf: (config) => config.showSeriesCount,
-    });
 });

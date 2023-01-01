@@ -68,7 +68,6 @@ class DotFlowProvider {
   millisPercentilesByTransitionId: { [transitionId: string]: { [key in percentiles]: number } } = {};
   maxCount: number;
   constructor(data: PanelData, options: SimpleOptions) { //TODO: don't need all options here, demeter-ify this
-    // map connection IDs to dot sizes
     const dataFrameView = new DataFrameView(data.series[0]);
     this.animationDurationMultiple = options.animationDurationMultiple;
     this.maxCount = 0;
