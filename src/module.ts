@@ -4,6 +4,12 @@ import { SimplePanel } from './components/SimplePanel';
 
 export const plugin = new PanelPlugin<SimpleOptions>(SimplePanel).setPanelOptions((builder) => {
   return builder
+    .addNumberInput({
+      path: 'animationDurationMultiple',
+      name: 'Animation duration multiple',
+      description: 'Mutliply animation durations (in millis) by this value before rendering',
+      defaultValue: 20,
+    })
     .addTextInput({
       path: 'text',
       name: 'Simple text option',

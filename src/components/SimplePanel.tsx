@@ -33,7 +33,6 @@ export const SimplePanel: React.FC<Props> = ({ options, data, width, height }) =
   const styles = useStyles2(getStyles);
   const bpmnContainer = useRef(null);
   const bpmnViewer = useRef<Viewer|null>(null);
-
   useEffect(() => {
     (async () => {
       //TODO: this path is probably trash
@@ -42,7 +41,7 @@ export const SimplePanel: React.FC<Props> = ({ options, data, width, height }) =
       }
       const sampleBpmnResponse = await fetch('/public/plugins/masch712-bpmnheatmap-panel/static/simple.bpmn');
       const sampleBpmnXml = await sampleBpmnResponse.text();
-      bpmnViewer.current = new Viewer({ container: bpmnContainer.current, additionalModules: [DotBpmnRendererModule, DotFlowModule, { data: ['value', data] }] });
+      bpmnViewer.current = new Viewer({ container: bpmnContainer.current, additionalModules: [DotBpmnRendererModule, DotFlowModule, { data: ['value', data] }, { options: ['value', options] }] });
       await bpmnViewer.current.importXML(sampleBpmnXml, 'BPMNDiagram_1');
       bpmnViewer.current.get('canvas').zoom('fit-viewport');
     })();
